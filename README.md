@@ -28,6 +28,8 @@ data
 |-TRAIN_RES_3.csv
 |-TRAIN_RES_4.csv
 |-TRAIN_RES_5.csv
+|-TEST_RES.csv
+|-TEST_SAL.csv
 ```
 
 ## Краткое описание решений
