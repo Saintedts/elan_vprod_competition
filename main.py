@@ -100,7 +100,7 @@ def classificatoin(X_test):
 
     # Create the dataframe with the predictions
     classification_result_df = pd.DataFrame(columns = ['id', 'job_name'])
-    classification_result_df['id'] = X_test['id_cv']
+    classification_result_df['id'] = X_test['id']
     classification_result_df['job_name'] = oe.inverse_transform(y_preds_processed.reshape(-1, 1)).ravel()
 
     return classification_result_df
