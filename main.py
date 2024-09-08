@@ -513,11 +513,11 @@ def preprocess(df, is_train: bool = True, train_df: pd.DataFrame = None):
 
 def regression(X_test):
     model = CatBoostRegressor()
-
+    init_df = pd.read_csv('data/TRAIN_SAL.csv')
     # Load the model
     model.load_model('models/regression/regression.cbm')
     id = X_test['id']
-    X_test = preprocess(X_test, is_train=False)
+    X_test = preprocess(X_test, is_train=False, train_df=init_df)
     y_pred = model.predict(X_test)
     y_pred_rubles = salary_scaler.inverse_transform(y_pred.reshape(-1,1))
     res = pd.DataFrame(columns=['id','task_type','salary'])

@@ -3,3 +3,4 @@
 models/classifications/job_name_model.pt filter=lfs diff=lfs merge=lfs -text
 models/classification/job_name_model.pt filter=lfs diff=lfs merge=lfs -text
 models/regression/regression.cbm filter=lfs diff=lfs merge=lfs -text
+data/TRAIN_SAL.csv filter=lfs diff=lfs merge=lfs -text
