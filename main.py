@@ -99,9 +99,10 @@ def classificatoin(X_test):
         y_preds_processed = np.append(y_preds_processed, tens)
 
     # Create the dataframe with the predictions
-    classification_result_df = pd.DataFrame(columns = ['id', 'job_name'])
+    classification_result_df = pd.DataFrame(columns = ['id', 'job_name', 'task_type'])
     classification_result_df['id'] = X_test['id']
     classification_result_df['job_name'] = oe.inverse_transform(y_preds_processed.reshape(-1, 1)).ravel()
+    classification_result_df['task_type'] = 'RES'
 
     return classification_result_df
 
