@@ -1,9 +1,12 @@
 import argparse
 import pickle
+import re
+import ast
 from tqdm import tqdm
 import pandas as pd
 import numpy as np
 from sklearn.impute import SimpleImputer
+from sklearn.preprocessing import StandardScaler
 from sklearn.preprocessing import OrdinalEncoder
 from sklearn.preprocessing import OneHotEncoder
 import torch
@@ -107,6 +110,29 @@ def classificatoin(X_test):
 
     return classification_result_df
 
+
+encoders = {
+    'academic_degree': joblib.load('models/regression/academic_degree_encoder.joblib'),
+    'accommodation_type': joblib.load('models/regression/accommodation_type_encoder.joblib'),
+    'bonus_type': joblib.load('models/regression/bonus_type_encoder.joblib'),
+    'measure_type': joblib.load('models/regression/measure_type_encoder.joblib'),
+    'busy_type': joblib.load('models/regression/busy_type_encoder.joblib'),
+    'education': joblib.load('models/regression/education_encoder.joblib'),
+    'original_source_type': joblib.load('models/regression/original_source_type_encoder.joblib'),
+    'company_business_size': joblib.load('models/regression/company_business_size_encoder.joblib'),
+    'schedule_type': joblib.load('models/regression/schedule_type_encoder.joblib'),
+    'social_protected_ids': joblib.load('models/regression/social_protected_ids_encoder.joblib'),
+    'source_type': joblib.load('models/regression/source_type_encoder.joblib'),
+    'state_region_code': joblib.load('models/regression/state_region_code_encoder.joblib'),
+    'status': joblib.load('models/regression/status_encoder.joblib'),
+    'transport_compensation': joblib.load('models/regression/transport_compensation_encoder.joblib'),
+    'vacancy_benefit_ids': joblib.load('models/regression/vacancy_benefit_ids_encoder.joblib'),
+    'professionalSphereName': joblib.load('models/regression/professionalSphereName_encoder.joblib'),
+    'federalDistrictCode': joblib.load('models/regression/federalDistrictCode_encoder.joblib'),
+    'code_professional_sphere': joblib.load('models/regression/code_professional_sphere_encoder.joblib'),
+    'required_drive_license': joblib.load('models/regression/required_drive_license_encoder.joblib'),
+    'languageKnowledge': joblib.load('models/regression/languageKnowledge_encoder.joblib')
+}
 
 def tokenize(vacancy_name):
     # Tokenize the vacancy name using regular expressions
@@ -486,37 +512,12 @@ def preprocess(df, is_train: bool = True, train_df: pd.DataFrame = None):
 
 
 def regression(X_test):
-    encoders = {
-        'academic_degree': joblib.load('models/regression/academic_degree_encoder.joblib'),
-        'accommodation_type': joblib.load('models/regression/accommodation_type_encoder.joblib'),
-        'bonus_type': joblib.load('models/regression/bonus_type_encoder.joblib'),
-        'measure_type': joblib.load('models/regression/measure_type_encoder.joblib'),
-        'busy_type': joblib.load('models/regression/busy_type_encoder.joblib'),
-        'education': joblib.load('models/regression/education_encoder.joblib'),
-        'original_source_type': joblib.load('models/regression/original_source_type_encoder.joblib'),
-        'company_business_size': joblib.load('models/regression/company_business_size_encoder.joblib'),
-        'schedule_type': joblib.load('models/regression/schedule_type_encoder.joblib'),
-        'social_protected_ids': joblib.load('models/regression/social_protected_ids_encoder.joblib'),
-        'source_type': joblib.load('models/regression/source_type_encoder.joblib'),
-        'state_region_code': joblib.load('models/regression/state_region_code_encoder.joblib'),
-        'status': joblib.load('models/regression/status_encoder.joblib'),
-        'transport_compensation': joblib.load('models/regression/transport_compensation_encoder.joblib'),
-        'vacancy_benefit_ids': joblib.load('models/regression/vacancy_benefit_ids_encoder.joblib'),
-        'professionalSphereName': joblib.load('models/regression/professionalSphereName_encoder.joblib'),
-        'federalDistrictCode': joblib.load('models/regression/federalDistrictCode_encoder.joblib'),
-        'code_professional_sphere': joblib.load('models/regression/code_professional_sphere_encoder.joblib'),
-        'required_drive_license': joblib.load('models/regression/required_drive_license_encoder.joblib'),
-        'languageKnowledge': joblib.load('models/regression/languageKnowledge_encoder.joblib')
-    }
-
-
-
     model = CatBoostRegressor()
 
     # Load the model
     model.load_model('models/regression/regression.cbm')
     id = X_test['id']
-    X_test = preprocess(X_test)
+    X_test = preprocess(X_test, is_train=False)
     y_pred = model.predict(X_test)
     y_pred_rubles = salary_scaler.inverse_transform(y_pred.reshape(-1,1))
     res = pd.DataFrame(columns=['id','task_type','salary'])
