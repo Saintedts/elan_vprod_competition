@@ -311,6 +311,18 @@ def explode_and_encode(df, column_name, prefix, value=None):
     encoded_df = pd.DataFrame(encoded, columns=encoders[column_name].get_feature_names_out([prefix]))
     return encoded_df.groupby(level=0).sum()
 
+
+def fillna_with_mode(df):
+    for col in df.columns:
+        if df[col].dtype in ['number', 'object', 'category']:
+            # Calculate the mode, excluding NaN
+            mode_value = df[col].mode()[0] if not df[col].mode().empty else None
+
+            # Fill NaN values with the mode value
+            df[col].fillna(mode_value, inplace=True)
+
+    return df
+
 premium_scaler = joblib.load('models/regression/premium_scaler.joblib')
 experience_scaler = joblib.load('models/regression/experience_scaler.joblib')
 salary_scaler = joblib.load('models/regression/salary_scaler.joblib')
@@ -457,7 +469,7 @@ def preprocess(df, is_train: bool = True, train_df: pd.DataFrame = None):
         df = hash_col(df, 'code_profession', 100)
         df = df.dropna()
     else:
-        df = df.fillna(train_df.median())
+        df = fillna_with_mode(df)
         df = pd.concat([df.drop('academic_degree', axis=1), encode_column(df, 'academic_degree', 'academic_degree')],
                        axis=1)
         df = pd.concat(
@@ -538,14 +550,14 @@ def main():
     sal_test = pd.read_csv(args.sal)
 
     # Compute the first task
-    job_result = classificatoin(job_test)
+    #job_result = classificatoin(job_test)
 
     # Compute the second task
     sal_result = regression(sal_test)
 
     # Save the result
-    submission = pd.concat([job_result, sal_result], axis=0)
-    submission.to_csv(args.sub, index = False)
+    #submission = pd.concat([job_result, sal_result], axis=0)
+    #submission.to_csv(args.sub, index = False)
 
 
 if __name__ == "__main__":
